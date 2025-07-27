@@ -45,9 +45,9 @@ jobs:
             from core.calculation_engine import CryogenicCalculationEngine
             engine = CryogenicCalculationEngine()
             result = engine.debye_heat_capacity(100, 275)
-            print(f'OK: Core calculation engine test passed: C(100K) = {result:.2f} J/kg/K')
+            print(f'OK 核心计算引擎测试通过: C(100K) = {result:.2f} J/kg/K')
         except Exception as e:
-            print(f'ERROR: Test failed: {e}')
+            print(f'ERROR 测试失败: {e}')
             sys.exit(1)
         "
       shell: bash
@@ -60,9 +60,9 @@ jobs:
             import matplotlib
             matplotlib.use('Agg')
             import matplotlib.pyplot as plt
-            print('OK: All dependencies imported successfully')
+            print('OK 所有依赖包导入成功')
         except Exception as e:
-            print(f'ERROR: Import failed: {e}')
+            print(f'ERROR 导入失败: {e}')
             import sys
             sys.exit(1)
         "
@@ -75,7 +75,7 @@ jobs:
 
     - name: Check documentation files
       run: |
-        # Check required documentation files exist
+        # 检查必要的文档文件是否存在
         required_files=(
           "README.md"
           "requirements.txt"
@@ -85,22 +85,22 @@ jobs:
         
         for file in "${required_files[@]}"; do
           if [ ! -f "$file" ]; then
-            echo "ERROR: Missing required file: $file"
+            echo "ERROR Missing required file: $file"
             exit 1
           else
-            echo "OK: Found: $file"
+            echo "OK Found: $file"
           fi
         done
         
-        # Check README.md contains required sections
+        # 检查README.md是否包含必要的部分
         if ! grep -q "## English" README.md; then
-          echo "ERROR: README.md missing English section"
+          echo "ERROR README.md missing English section"
           exit 1
         fi
         
         if ! grep -q "## 中文" README.md; then
-          echo "ERROR: README.md missing Chinese section"  
+          echo "ERROR README.md missing Chinese section"
           exit 1
         fi
         
-        echo "OK: Documentation check passed"
+        echo "OK Documentation check passed"
