@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cryogenic-cooling-calculator"
+version = "1.1.0"
+description = "Professional tool for calculating cooling time of niobium samples in cryocooler systems"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Ming Liu", email = "ming-1018@foxmail.com"}
+]
+maintainers = [
+    {name = "Ming Liu", email = "ming-1018@foxmail.com"}
+]
+keywords = ["cryogenic", "cooling", "calculator", "physics", "niobium", "debye-model"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.19.0",
+    "matplotlib>=3.3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0.0",
+    "black>=21.0.0",
+    "flake8>=3.8.0",
+    "isort>=5.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/iuming/Cryogenic_Cooling_Time_Calculator"
+Documentation = "https://iuming.github.io/Cryogenic_Cooling_Time_Calculator/"
+Repository = "https://github.com/iuming/Cryogenic_Cooling_Time_Calculator"
+Issues = "https://github.com/iuming/Cryogenic_Cooling_Time_Calculator/issues"
+
+[project.scripts]
+cryogenic-calculator = "cooling_gui:main"
+
+[tool.setuptools.packages.find]
+include = ["core*", "utils*", "scripts*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.md", "*.txt", "*.bat"]
+
+[tool.black]
+line-length = 127
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  __pycache__
+  | \.git
+  | \.github
+  | \.vscode
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 127
+
+[tool.pytest.ini_options]
+testpaths = ["scripts", "utils"]
+python_files = ["test_*.py", "*_test.py"]
+addopts = "-v --tb=short"

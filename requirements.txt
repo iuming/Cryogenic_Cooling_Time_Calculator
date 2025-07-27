@@ -1,17 +1,20 @@
+# 核心依赖 / Core dependencies
 numpy>=1.19.0
 matplotlib>=3.3.0
 
 # GUI 依赖 (通常随Python一起安装)
 # tkinter (内置于大多数Python发行版)
 
-# 可选的字体支持
+# 开发和测试依赖 (Development dependencies)
+# 安装开发依赖: pip install -e ".[dev]"
+# pytest>=6.0.0
+# black>=21.0.0
+# flake8>=3.8.0
+# isort>=5.0.0
+
+# 可选的字体支持 (Optional font support)
 # 对于Windows系统，推荐安装以下中文字体:
 # - Microsoft YaHei (微软雅黑)
 # - SimHei (黑体)
 # - FangSong (仿宋)
 # - KaiTi (楷体)
-
-# 开发和测试依赖 (可选)
-# pytest>=6.0.0
-# black>=21.0.0
-# flake8>=3.8.0

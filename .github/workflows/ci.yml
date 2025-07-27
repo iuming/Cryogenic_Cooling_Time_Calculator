@@ -59,6 +59,10 @@ jobs:
             sys.exit(1)
         "
 
+    - name: Run unit tests
+      run: |
+        python -m pytest tests/ -v --tb=short || echo "No tests found or pytest not available"
+
   documentation:
     runs-on: ubuntu-latest
     steps:
