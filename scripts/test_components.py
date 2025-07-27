@@ -55,20 +55,20 @@ def test_calculation_only():
     print("测试核心计算功能...")
     
     try:
-        from core.calculation_engine import calculate_cooling_time
+        from core.calculation_engine import CryogenicCalculationEngine
         
-        # 运行计算
-        results = calculate_cooling_time(
-            cooling_power=1.0,
-            copper_mass=1.613,
-            sample_mass=0.024
-        )
+        # 创建计算引擎
+        engine = CryogenicCalculationEngine()
         
-        print(f"✓ 计算完成")
-        print(f"  总时间: {results['total_time_hours']:.1f} 小时")
-        print(f"  总时间: {results['total_time_days']:.1f} 天")
-        print(f"  成功阶段: {results['successful_stages']}")
-        print(f"  最终温度: {results['final_temperature']:.1f} K")
+        # 测试德拜热容计算
+        heat_capacity = engine.debye_heat_capacity(100, 275)
+        print(f"✓ 德拜热容计算: C(100K) = {heat_capacity:.2f} J/kg/K")
+        
+        # 测试热泄漏计算
+        heat_leak = engine.calculate_heat_leak(100, 300, 1e-3)
+        print(f"✓ 热泄漏计算: {heat_leak['total']:.4f} W")
+        
+        print(f"✓ 核心计算引擎测试通过")
         
         return True
         

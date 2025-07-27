@@ -1,0 +1,31 @@
+[flake8]
+max-line-length = 127
+max-complexity = 15
+ignore = 
+    # E501: line too long (handled by max-line-length)
+    E501,
+    # W503: line break before binary operator (black compatibility)
+    W503,
+    # E203: whitespace before ':' (black compatibility)
+    E203,
+    # F401: imported but unused (common in __init__.py files)
+    F401,
+    # E402: module level import not at top of file
+    E402
+
+exclude = 
+    .git,
+    __pycache__,
+    .pytest_cache,
+    .github,
+    build,
+    dist,
+    *.egg-info
+
+per-file-ignores =
+    # __init__.py files can have unused imports
+    __init__.py:F401
+    # Test files can have longer lines and unused imports
+    test_*.py:E501,F401
+    # Scripts can be more flexible
+    scripts/*.py:E501,F401

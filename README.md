@@ -6,6 +6,11 @@
 
 A professional tool for calculating cooling time of niobium samples in cryocooler systems. This project provides an intuitive GUI interface with parameter input, results analysis, and chart visualization.
 
+[![Python Version](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Documentation](https://img.shields.io/badge/docs-sphinx-blue.svg)](https://iuming.github.io/Cryogenic_Cooling_Time_Calculator/)
+[![GitHub Release](https://img.shields.io/github/v/release/iuming/Cryogenic_Cooling_Time_Calculator)](https://github.com/iuming/Cryogenic_Cooling_Time_Calculator/releases)
+
 ## 功能特性 / Features
 
 - 🔧 **参数化计算**: 支持多种系统参数配置

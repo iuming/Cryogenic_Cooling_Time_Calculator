@@ -1,0 +1,646 @@
+name: Deploy Documentation to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install sphinx sphinx-rtd-theme myst-parser sphinx-copybutton
+        pip install -r requirements.txt
+        
+    - name: Create documentation structure
+      run: |
+        mkdir -p docs_source
+        mkdir -p docs_source/_static
+        mkdir -p docs_source/_templates
+        
+    - name: Generate Sphinx configuration
+      run: |
+        cat > docs_source/conf.py << 'EOF'
+        import os
+        import sys
+        sys.path.insert(0, os.path.abspath('..'))
+
+        project = 'Cryogenic Cooling Time Calculator'
+        copyright = '2025, Ming Liu'
+        author = 'Ming Liu'
+        release = 'v1.0.0'
+
+        extensions = [
+            'sphinx.ext.autodoc',
+            'sphinx.ext.viewcode',
+            'sphinx.ext.napoleon',
+            'myst_parser',
+            'sphinx_copybutton',
+        ]
+
+        templates_path = ['_templates']
+        exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+        html_theme = 'sphinx_rtd_theme'
+        html_static_path = ['_static']
+        html_title = 'Cryogenic Cooling Time Calculator Documentation'
+        html_short_title = 'CryoCooling Calc'
+
+        html_theme_options = {
+            'logo_only': False,
+            'display_version': True,
+            'prev_next_buttons_location': 'bottom',
+            'style_external_links': False,
+            'collapse_navigation': True,
+            'sticky_navigation': True,
+            'navigation_depth': 4,
+            'includehidden': True,
+            'titles_only': False
+        }
+
+        source_suffix = {
+            '.rst': None,
+            '.md': 'myst_parser',
+        }
+
+        myst_enable_extensions = [
+            "colon_fence",
+            "deflist",
+            "dollarmath",
+            "fieldlist",
+            "html_admonition",
+            "html_image",
+            "linkify",
+            "replacements",
+            "smartquotes",
+            "strikethrough",
+            "substitution",
+            "tasklist",
+        ]
+        EOF
+        
+    - name: Create main documentation files
+      run: |
+        # 创建主索引文件
+        cat > docs_source/index.rst << 'EOF'
+        Cryogenic Cooling Time Calculator
+        ==================================
+
+        Welcome to the Cryogenic Cooling Time Calculator documentation!
+
+        This is a professional tool for calculating cooling time of niobium samples in cryocooler systems. 
+        The project provides an intuitive GUI interface with parameter input, results analysis, and chart visualization.
+
+        .. image:: https://img.shields.io/badge/Python-3.8+-blue.svg
+           :target: https://www.python.org/downloads/
+           :alt: Python Version
+
+        .. image:: https://img.shields.io/badge/License-MIT-green.svg
+           :target: https://opensource.org/licenses/MIT
+           :alt: License
+
+        .. image:: https://img.shields.io/github/v/release/iuming/Cryogenic_Cooling_Time_Calculator
+           :target: https://github.com/iuming/Cryogenic_Cooling_Time_Calculator/releases
+           :alt: Latest Release
+
+        Features
+        --------
+
+        🔧 **参数化计算**: Support for multiple system parameter configurations
+        
+        📊 **可视化分析**: Cooling curves, heat capacity and heat leak charts
+        
+        🎨 **双语支持**: Chinese/English interface switching
+        
+        🏗️ **系统示意图**: Cryostat structure visualization
+        
+        ⚡ **多线程计算**: Prevent interface freezing
+        
+        📋 **详细报告**: Segmented analysis and engineering recommendations
+
+        .. toctree::
+           :maxdepth: 2
+           :caption: Contents:
+
+           installation
+           usage
+           physics
+           api
+           examples
+           changelog
+
+        Quick Start
+        -----------
+
+        Installation
+        ~~~~~~~~~~~~
+
+        .. code-block:: bash
+
+           git clone https://github.com/iuming/Cryogenic_Cooling_Time_Calculator.git
+           cd Cryogenic_Cooling_Time_Calculator
+           pip install -r requirements.txt
+           python cooling_gui.py
+
+        Basic Usage
+        ~~~~~~~~~~~
+
+        1. **System Parameters**: Set cryocooler power, vacuum level, temperatures
+        2. **Sample Configuration**: Configure niobium sample dimensions and count  
+        3. **Thermal Components**: Set copper plate and cold shield parameters
+        4. **Run Calculation**: Get detailed cooling time analysis and visualization
+
+        About
+        -----
+
+        :Author: Ming Liu (刘铭)
+        :Email: ming-1018@foxmail.com
+        :Institution: Key Laboratory of Particle Acceleration Physics and Technology, Chinese Academy of Sciences
+        :GitHub: `@iuming <https://github.com/iuming>`_
+        :License: MIT License
+        EOF
+
+        # 创建安装指南
+        cat > docs_source/installation.rst << 'EOF'
+        Installation Guide
+        ==================
+
+        Requirements
+        ------------
+
+        * Python 3.8 or higher
+        * NumPy >= 1.19.0
+        * Matplotlib >= 3.3.0
+        * Tkinter (usually included with Python)
+
+        Installation Methods
+        --------------------
+
+        From Source
+        ~~~~~~~~~~~
+
+        .. code-block:: bash
+
+           git clone https://github.com/iuming/Cryogenic_Cooling_Time_Calculator.git
+           cd Cryogenic_Cooling_Time_Calculator
+           pip install -r requirements.txt
+
+        Direct Download
+        ~~~~~~~~~~~~~~~
+
+        1. Download the latest release from `GitHub Releases <https://github.com/iuming/Cryogenic_Cooling_Time_Calculator/releases>`_
+        2. Extract the archive
+        3. Install dependencies:
+
+        .. code-block:: bash
+
+           pip install -r requirements.txt
+
+        Running the Application
+        -----------------------
+
+        Python Command
+        ~~~~~~~~~~~~~~
+
+        .. code-block:: bash
+
+           python cooling_gui.py
+
+        Windows Batch File
+        ~~~~~~~~~~~~~~~~~~
+
+        .. code-block:: batch
+
+           start_gui.bat
+
+        Troubleshooting
+        ---------------
+
+        Chinese Font Issues
+        ~~~~~~~~~~~~~~~~~~~
+
+        If Chinese characters appear as squares in the plots:
+
+        1. Install Chinese fonts (Windows usually has them)
+        2. The application will automatically detect available fonts
+        3. Supported fonts: SimHei, Microsoft YaHei, FangSong, KaiTi
+
+        Tkinter Not Found
+        ~~~~~~~~~~~~~~~~~
+
+        On some Linux distributions, install tkinter separately:
+
+        .. code-block:: bash
+
+           # Ubuntu/Debian
+           sudo apt-get install python3-tk
+           
+           # CentOS/RHEL
+           sudo yum install tkinter
+        EOF
+
+        # 创建使用指南
+        cat > docs_source/usage.rst << 'EOF'
+        Usage Guide
+        ===========
+
+        Interface Overview
+        ------------------
+
+        The application features a tabbed interface with three main sections:
+
+        1. **Parameter Settings** (参数设置)
+        2. **Calculation Results** (计算结果)  
+        3. **Result Charts** (结果图表)
+
+        Parameter Settings
+        ------------------
+
+        System Parameters
+        ~~~~~~~~~~~~~~~~~
+
+        * **Cryocooler Power** (制冷机功率): Nominal cooling power in Watts
+        * **Vacuum Level** (真空度): Operating pressure in Pa
+        * **Initial Temperature** (初始温度): Starting temperature in Kelvin
+        * **Target Temperature** (目标温度): Final temperature in Kelvin
+
+        Sample Parameters
+        ~~~~~~~~~~~~~~~~~
+
+        * **Sample Count** (样品数量): Number of niobium pieces
+        * **Length** (长度): Sample length in cm
+        * **Width** (宽度): Sample width in mm
+        * **Height** (高度): Sample height in mm
+
+        Thermal Components
+        ~~~~~~~~~~~~~~~~~~
+
+        **Copper Plate**:
+        * Length and width in cm
+        * Thickness in mm
+
+        **Cold Shield**:
+        * Diameter and height in m
+        * Thickness in mm
+
+        **Multi-layer Insulation**:
+        * Outer layer count
+        * Inner layer count
+
+        Calculation Options
+        ~~~~~~~~~~~~~~~~~~~
+
+        * **Include Shield Cooling**: Whether to include cold shield in calculations
+        * **Liquid Nitrogen Precooling**: Option to use LN2 precooling to 77K
+
+        Running Calculations
+        --------------------
+
+        1. Set parameters in the left panel
+        2. Click **Start Calculation** (开始计算)
+        3. Progress bar indicates calculation status
+        4. View results in the **Results** tab
+        5. Analyze charts in the **Charts** tab
+
+        Language Switching
+        ------------------
+
+        Click the **English/中文** button to switch between languages. The interface will update dynamically.
+
+        Results Interpretation
+        ----------------------
+
+        The results include:
+
+        * **Theoretical Time**: Physics-based calculation
+        * **Engineering Time**: Practical estimate with safety factors
+        * **Stage Analysis**: Detailed breakdown by temperature ranges
+        * **Heat Analysis**: Heat capacity and leak contributions
+        * **Time Range**: Conservative estimates (best/typical/conservative)
+        EOF
+
+        # 创建物理模型说明
+        cat > docs_source/physics.rst << 'EOF'
+        Physics Models
+        ==============
+
+        The calculator implements several physics-based models for accurate cooling time estimation.
+
+        Debye Model for Heat Capacity
+        ------------------------------
+
+        For low-temperature heat capacity calculation, we use the Debye model:
+
+        .. math::
+
+           C_V = 9Nk_B \left(\frac{T}{\Theta_D}\right)^3 \int_0^{\Theta_D/T} \frac{x^4 e^x}{(e^x - 1)^2} dx
+
+        Where:
+        * :math:`N` is the number of atoms
+        * :math:`k_B` is Boltzmann constant
+        * :math:`T` is temperature
+        * :math:`\Theta_D` is the Debye temperature
+
+        Material Properties
+        ~~~~~~~~~~~~~~~~~~~
+
+        * **Niobium**: :math:`\Theta_D = 275` K, :math:`\rho = 8570` kg/m³
+        * **Copper**: :math:`\Theta_D = 343` K, :math:`\rho = 8960` kg/m³
+
+        Heat Transfer Analysis
+        ----------------------
+
+        Radiation Heat Transfer
+        ~~~~~~~~~~~~~~~~~~~~~~~
+
+        Stefan-Boltzmann law for radiative heat transfer:
+
+        .. math::
+
+           Q_{rad} = \sigma \epsilon A (T_{hot}^4 - T_{cold}^4)
+
+        Where:
+        * :math:`\sigma = 5.67 \times 10^{-8}` W/m²/K⁴ (Stefan-Boltzmann constant)
+        * :math:`\epsilon` is emissivity
+        * :math:`A` is surface area
+
+        Conduction Through Residual Gas
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        At low pressures, molecular heat conduction:
+
+        .. math::
+
+           Q_{gas} = \frac{1}{2} n \bar{v} k_B (T_{hot} - T_{cold}) A
+
+        Multi-layer Insulation (MLI)
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        MLI effectiveness reduces heat transfer by:
+
+        .. math::
+
+           Q_{MLI} = \frac{Q_0}{N_{layers}^{0.2}}
+
+        Where :math:`N_{layers}` is the number of insulation layers.
+
+        Multi-stage Cooling Calculation
+        --------------------------------
+
+        The cooling process is divided into temperature stages:
+
+        1. **300K → 250K**: High heat capacity region
+        2. **250K → 200K**: Moderate cooling
+        3. **200K → 150K**: Decreasing heat capacity
+        4. **150K → 100K**: Transition region
+        5. **100K → 77K**: Liquid nitrogen precooling option
+        6. **77K → 50K**: Low temperature region
+        7. **50K → 30K**: Very low heat capacity
+        8. **30K → 20K**: Approaching base temperature
+        9. **20K → 10K**: Final cooling stages
+        10. **10K → 4.2K**: Final target
+
+        For each stage:
+
+        .. math::
+
+           t_{stage} = \frac{m \cdot C_{avg} \cdot \Delta T}{P_{net}}
+
+        Where:
+        * :math:`m` is total mass
+        * :math:`C_{avg}` is average heat capacity
+        * :math:`\Delta T` is temperature difference
+        * :math:`P_{net}` is net cooling power (cooling power minus heat leak)
+
+        Engineering Corrections
+        ------------------------
+
+        The theoretical time is adjusted with engineering factors:
+
+        * **Thermal contact factor**: 1.2 (accounts for imperfect thermal contact)
+        * **System efficiency factor**: 1.1 (accounts for system inefficiencies)  
+        * **Safety margin**: +4 hours (conservative buffer)
+
+        .. math::
+
+           t_{engineering} = t_{theoretical} \times 1.2 \times 1.1 + 4 \text{ hours}
+        EOF
+
+        # 创建 API 文档
+        cat > docs_source/api.rst << 'EOF'
+        API Reference
+        =============
+
+        Core Modules
+        ------------
+
+        .. automodule:: core.calculation_engine
+           :members:
+           :undoc-members:
+           :show-inheritance:
+
+        Utility Functions
+        -----------------
+
+        .. automodule:: utils.font_utils
+           :members:
+           :undoc-members:
+           :show-inheritance:
+
+        .. automodule:: utils.test_utils
+           :members:
+           :undoc-members:
+           :show-inheritance:
+
+        Scripts
+        -------
+
+        .. automodule:: scripts.simple_calculator
+           :members:
+           :undoc-members:
+           :show-inheritance:
+        EOF
+
+        # 创建示例页面
+        cat > docs_source/examples.rst << 'EOF'
+        Examples
+        ========
+
+        Basic Calculation Example
+        -------------------------
+
+        Here's a simple example of using the calculation engine directly:
+
+        .. code-block:: python
+
+           from core.calculation_engine import CryogenicCalculationEngine
+           
+           # Create engine instance
+           engine = CryogenicCalculationEngine()
+           
+           # Calculate heat capacity at 100K
+           heat_capacity = engine.debye_heat_capacity(100, 275)  # T=100K, θ_D=275K
+           print(f"Heat capacity: {heat_capacity:.2f} J/kg/K")
+           
+           # Calculate heat leak
+           heat_leak = engine.calculate_heat_leak(100, 300, 1e-3)
+           print(f"Total heat leak: {heat_leak['total']:.4f} W")
+
+        Typical System Configuration
+        ----------------------------
+
+        Standard 1W cryocooler system for niobium samples:
+
+        **System Parameters:**
+        * Cryocooler power: 1.0 W
+        * Vacuum level: 1×10⁻³ Pa
+        * Initial temperature: 300 K
+        * Target temperature: 4.2 K
+
+        **Sample Configuration:**
+        * 7 niobium pieces
+        * Dimensions: 10cm × 2mm × 2mm each
+        * Total mass: ~24g
+
+        **Thermal Components:**
+        * Copper plate: 30cm × 20cm × 3mm
+        * Cold shield: φ1.2m × 1.3m × 5mm
+        * MLI: 50 outer layers + 10 inner layers
+
+        **Expected Results:**
+        * Theoretical time: ~85 hours
+        * Engineering estimate: ~115 hours
+        * With LN2 precooling: ~45 hours
+
+        Advanced Configuration
+        ----------------------
+
+        For faster cooling with larger samples:
+
+        .. code-block:: python
+
+           # Modified parameters for larger system
+           params = {
+               'cooling_power': 2.0,  # 2W cryocooler
+               'sample_count': 14,    # More samples
+               'use_ln2_precool': True,  # Enable LN2 precooling
+               'mli_outer': 100,      # Better insulation
+               'vacuum_pressure': 1e-4  # Better vacuum
+           }
+
+        Performance Optimization Tips
+        -----------------------------
+
+        1. **Use Liquid Nitrogen Precooling**: Can reduce time by ~60%
+        2. **Improve Thermal Contact**: Use indium foil or thermal paste
+        3. **Better Vacuum**: Lower pressure reduces heat leak
+        4. **More MLI Layers**: Diminishing returns after ~50 layers
+        5. **Cold Shield Precooling**: Pre-cool shield to save time
+        EOF
+
+        # 创建变更日志
+        cat > docs_source/changelog.rst << 'EOF'
+        Changelog
+        =========
+
+        Version 1.0.0 (2025-07-27)
+        ---------------------------
+
+        Initial Release
+        ~~~~~~~~~~~~~~~
+
+        **New Features:**
+        * Complete GUI application with tkinter
+        * Physics-based calculation engine with Debye model
+        * Multi-stage cooling time analysis
+        * Interactive visualization and charts
+        * Cryostat structure schematic diagram
+        * Dual language support (Chinese/English)
+        * Comprehensive documentation and tests
+
+        **Core Functionality:**
+        * Parameter input with real-time validation
+        * Multi-threaded calculations to prevent UI freezing
+        * Cooling curves and heat capacity visualization
+        * Heat leak analysis with multiple contributions
+        * Engineering time estimates with safety factors
+        * Project structure optimization
+
+        **Technical Implementation:**
+        * Modular code architecture
+        * Comprehensive error handling
+        * Cross-platform compatibility (Windows, Linux, macOS)
+        * Professional documentation
+        * Automated testing with CI/CD
+
+        **Physics Models:**
+        * Debye model for low-temperature heat capacity
+        * Stefan-Boltzmann radiation heat transfer
+        * Residual gas conduction analysis
+        * Multi-layer insulation (MLI) effectiveness
+        * Multi-stage cooling calculations
+
+        Future Releases
+        ---------------
+
+        **Planned Features (v1.1.0):**
+        * Database of common materials
+        * Advanced thermal modeling
+        * Export functionality for results
+        * Plugin system for custom calculations
+
+        **Long-term Goals (v2.0.0):**
+        * Web-based interface option
+        * Advanced 3D thermal modeling
+        * Integration with experimental data
+        * Machine learning optimization
+        EOF
+        
+    - name: Build documentation
+      run: |
+        cd docs_source
+        sphinx-build -b html . _build/html
+        
+    - name: Setup Pages
+      uses: actions/configure-pages@v3
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: docs_source/_build/html
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2

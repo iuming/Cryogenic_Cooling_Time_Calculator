@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryogenic Cooling Time Calculator - 低温制冷时间计算器</title>
+    <meta name="description" content="专业的铌样品低温制冷时间计算工具，基于德拜模型的物理计算引擎">
+    <meta name="keywords" content="cryogenic, cooling, calculator, niobium, debye model, 低温, 制冷, 计算器, 铌">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .feature-card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .docs-section {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .doc-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+            display: block;
+        }
+        
+        .doc-card:hover {
+            transform: translateY(-5px);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .doc-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .tech-item {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+        }
+        
+        .download-section {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: transform 0.3s ease;
+            margin: 10px;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .screenshot {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .screenshot img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 30px 0;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            .content, .docs-section {
+                padding: 20px;
+            }
+            .feature-grid, .docs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔬 Cryogenic Cooling Time Calculator</h1>
+            <p>低温制冷时间计算器 - Professional Niobium Sample Cooling Analysis Tool</p>
+        </div>
+        
+        <div class="content">
+            <h2>🎯 项目简介 / Project Overview</h2>
+            <p>低温制冷时间计算器是一个专业的科学计算工具，用于分析铌样品在1W制冷机系统中的冷却过程。该工具提供直观的GUI界面、物理建模、可视化分析和详细的工程报告。</p>
+            <br>
+            <p>A professional scientific computation tool for analyzing the cooling process of niobium samples in 1W cryocooler systems. This tool provides an intuitive GUI interface, physics modeling, visualization analysis, and detailed engineering reports.</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔧 参数化计算</h3>
+                    <p>支持多种系统参数配置，包括制冷机功率、真空度、样品尺寸、冷屏参数等的灵活设置。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 可视化分析</h3>
+                    <p>提供冷却曲线、热容随温度变化、热泄漏分析等多种图表，支持线性和对数坐标显示。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎨 双语支持</h3>
+                    <p>完整的中英文界面切换功能，满足国际化科研团队的使用需求。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏗️ 系统示意图</h3>
+                    <p>内置恒温器结构示意图，清晰展示多层隔热、冷屏、样品等组件的空间关系。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ 多线程计算</h3>
+                    <p>采用多线程架构避免界面冻结，提供实时进度指示和计算状态反馈。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 详细报告</h3>
+                    <p>生成包含分段分析、工程建议、安全余量评估的综合技术报告。</p>
+                </div>
+            </div>
+            
+            <h2>⚙️ 技术栈 / Tech Stack</h2>
+            <div class="tech-stack">
+                <span class="tech-item">Python 3.8+</span>
+                <span class="tech-item">tkinter GUI</span>
+                <span class="tech-item">matplotlib</span>
+                <span class="tech-item">numpy</span>
+                <span class="tech-item">Debye Model</span>
+                <span class="tech-item">Heat Transfer</span>
+            </div>
+        </div>
+        
+        <div class="docs-section">
+            <h2>📚 项目文档 / Documentation</h2>
+            <p>查看详细的技术文档、使用指南和API参考：</p>
+            
+            <div class="docs-grid">
+                <a href="docs/README.html" class="doc-card">
+                    <h3>📖 技术文档</h3>
+                    <p>详细的技术说明、物理模型、系统架构和实现细节</p>
+                </a>
+                <a href="docs/USAGE.html" class="doc-card">
+                    <h3>🚀 使用指南</h3>
+                    <p>快速入门、参数设置、结果解读和常见问题解答</p>
+                </a>
+                <a href="https://iuming.github.io/Cryogenic_Cooling_Time_Calculator/" class="doc-card">
+                    <h3>📚 完整文档</h3>
+                    <p>Sphinx生成的完整文档，包含API参考和详细示例</p>
+                </a>
+                <a href="https://github.com/iuming/Cryogenic_Cooling_Time_Calculator" class="doc-card">
+                    <h3>💻 源代码</h3>
+                    <p>GitHub仓库、源代码浏览、Issues和贡献指南</p>
+                </a>
+                <a href="https://github.com/iuming/Cryogenic_Cooling_Time_Calculator/releases" class="doc-card">
+                    <h3>📦 版本发布</h3>
+                    <p>下载最新版本、查看更新日志和历史版本</p>
+                </a>
+            </div>
+        </div>
+        
+        <div class="content">
+            <h2>🚀 快速开始 / Quick Start</h2>
+            
+            <h3>1. 环境要求 / Requirements</h3>
+            <pre><code>Python 3.8+
+numpy >= 1.19.0
+matplotlib >= 3.3.0</code></pre>
+            
+            <h3>2. 安装依赖 / Install Dependencies</h3>
+            <pre><code>pip install -r requirements.txt</code></pre>
+            
+            <h3>3. 运行程序 / Run Application</h3>
+            <pre><code>python cooling_gui.py</code></pre>
+            
+            <div class="download-section">
+                <a href="https://github.com/iuming/Cryogenic_Cooling_Time_Calculator/archive/refs/heads/main.zip" class="download-btn">
+                    📥 下载源码 / Download Source
+                </a>
+                <a href="https://github.com/iuming/Cryogenic_Cooling_Time_Calculator/releases/latest" class="download-btn">
+                    🏷️ 最新版本 / Latest Release
+                </a>
+            </div>
+        </div>
+        
+        <div class="content">
+            <h2>🔬 物理模型 / Physics Models</h2>
+            
+            <h3>德拜模型 / Debye Model</h3>
+            <p>采用德拜模型计算低温下铌和铜的比热容，考虑晶格振动对热容的贡献：</p>
+            <ul>
+                <li>德拜温度：铌 275K，铜 343K</li>
+                <li>适用于极低温（&lt;50K）到室温范围</li>
+                <li>提供准确的材料热物性参数</li>
+            </ul>
+            
+            <h3>热传导分析 / Heat Transfer Analysis</h3>
+            <ul>
+                <li><strong>辐射传热</strong>：Stefan-Boltzmann定律</li>
+                <li><strong>气体传导</strong>：残余气体分子传热</li>
+                <li><strong>多层隔热</strong>：MLI隔热效率建模</li>
+                <li><strong>支撑传导</strong>：机械支撑热桥分析</li>
+            </ul>
+            
+            <h3>多阶段冷却 / Multi-stage Cooling</h3>
+            <ul>
+                <li>温度分段计算（300K → 4.2K，10个阶段）</li>
+                <li>工程修正系数（安全系数1.2 + 系统效率0.9）</li>
+                <li>液氮预冷选项（可缩短总时间50%以上）</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2025 Ming Liu (刘铭) | Key Laboratory of Particle Acceleration Physics and Technology, Chinese Academy of Sciences</p>
+            <p>本项目用于科学研究目的，计算结果仅供参考 | For scientific research purposes only</p>
+        </div>
+    </div>
+</body>
+</html>
