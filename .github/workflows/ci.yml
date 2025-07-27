@@ -1,0 +1,224 @@
+name: CI Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: [3.7, 3.8, 3.9, '3.10', '3.11']
+        exclude:
+          # 排除一些不必要的组合以节省CI时间
+          - os: macos-latest
+            python-version: 3.7
+          - os: macos-latest
+            python-version: 3.8
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Install testing dependencies
+      run: |
+        pip install pytest pytest-cov flake8
+
+    - name: Lint with flake8
+      run: |
+        # 停止构建如果有Python语法错误或未定义的名称
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # 警告但不停止构建的其他问题
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Test core functionality (headless)
+      run: |
+        python scripts/test_components.py
+
+    - name: Test simple calculator
+      run: |
+        python scripts/simple_calculator.py
+
+    - name: Test calculation engine
+      run: |
+        python -c "
+        from core.calculation_engine import calculate_cooling_time
+        result = calculate_cooling_time()
+        assert result['total_time_hours'] > 0
+        print('✓ Calculation engine test passed')
+        "
+
+    - name: Test font utilities
+      run: |
+        python -c "
+        from utils.font_utils import detect_chinese_fonts, get_safe_font
+        fonts = detect_chinese_fonts()
+        safe_font = get_safe_font()
+        print(f'✓ Font utilities test passed, found {len(fonts)} Chinese fonts')
+        "
+
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install black isort flake8 mypy
+
+    - name: Check code formatting with black
+      run: |
+        black --check --diff .
+
+    - name: Check import sorting with isort
+      run: |
+        isort --check-only --diff .
+
+    - name: Lint with flake8
+      run: |
+        flake8 . --max-line-length=127 --extend-ignore=E203,W503
+
+  gui-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        # 为GUI测试安装虚拟显示
+        sudo apt-get update
+        sudo apt-get install -y xvfb
+
+    - name: Test GUI components (headless)
+      run: |
+        # 使用虚拟显示运行GUI测试
+        xvfb-run -a python -c "
+        import sys
+        sys.path.insert(0, '.')
+        
+        # 测试GUI导入
+        try:
+            import tkinter as tk
+            root = tk.Tk()
+            root.withdraw()
+            print('✓ Tkinter import successful')
+            root.destroy()
+        except Exception as e:
+            print(f'✗ Tkinter test failed: {e}')
+            sys.exit(1)
+        
+        # 测试matplotlib后端
+        try:
+            import matplotlib
+            matplotlib.use('Agg')
+            import matplotlib.pyplot as plt
+            import numpy as np
+            
+            fig, ax = plt.subplots()
+            x = np.linspace(0, 10, 100)
+            y = np.sin(x)
+            ax.plot(x, y)
+            plt.close(fig)
+            print('✓ Matplotlib test successful')
+        except Exception as e:
+            print(f'✗ Matplotlib test failed: {e}')
+            sys.exit(1)
+        "
+
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check documentation files
+      run: |
+        # 检查必要的文档文件是否存在
+        required_files=(
+          "README.md"
+          "requirements.txt"
+          "docs/README.md"
+          "docs/USAGE.md"
+        )
+        
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "✗ Missing required file: $file"
+            exit 1
+          else
+            echo "✓ Found: $file"
+          fi
+        done
+        
+        # 检查README.md是否包含必要的部分
+        if ! grep -q "## English" README.md; then
+          echo "✗ README.md missing English section"
+          exit 1
+        fi
+        
+        if ! grep -q "## 中文" README.md; then
+          echo "✗ README.md missing Chinese section"
+          exit 1
+        fi
+        
+        echo "✓ Documentation check passed"
+
+  release:
+    needs: [test, code-quality, gui-test, documentation]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 获取完整历史用于生成changelog
+
+    - name: Generate release info
+      id: release_info
+      run: |
+        # 生成版本号（基于日期）
+        VERSION=$(date +"%Y.%m.%d")
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+        # 生成changelog
+        git log --oneline --since="1 day ago" > RECENT_CHANGES.md || echo "No recent changes" > RECENT_CHANGES.md
+        
+        echo "Generated version: $VERSION"
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.release_info.outputs.version }}
+        release_name: Release v${{ steps.release_info.outputs.version }}
+        body_path: RECENT_CHANGES.md
+        draft: false
+        prerelease: false
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
